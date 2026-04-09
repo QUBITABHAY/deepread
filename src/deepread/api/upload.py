@@ -1,11 +1,12 @@
 from fastapi import APIRouter, File, UploadFile
 from deepread.core.logger import logger
 from deepread.services.ingestion import ingest_file
+from deepread.models.response import UploadResponse
 
 router = APIRouter()
 
 
-@router.post("/upload")
+@router.post("/upload", response_model=UploadResponse)
 async def upload(file: UploadFile = File(...)):
     logger.info(f"Received file upload endpoint hit: {file.filename}")
     
@@ -13,4 +14,4 @@ async def upload(file: UploadFile = File(...)):
     result = await ingest_file(file)
 
     logger.info(f"Ingestion finished for {file.filename}")
-    return result
+    return UploadResponse(**result)

@@ -1,20 +1,17 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
 from deepread.core.logger import logger
 from deepread.services.query import process_query
+from deepread.models.request import QueryRequest
+from deepread.models.response import QueryResponse
 
 router = APIRouter()
 
 
-class QueryRequest(BaseModel):
-    question: str
-
-
-@router.post("/query")
+@router.post("/query", response_model=QueryResponse)
 async def query(request: QueryRequest):
     logger.info(f"Received query request: {request.question}")
     
     # Send to query service layer
     answer = await process_query(request.question)
     
-    return {"answer": answer}
+    return QueryResponse(answer=answer)
