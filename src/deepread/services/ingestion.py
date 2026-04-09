@@ -2,12 +2,10 @@ import os
 from fastapi import UploadFile
 from deepread.core.config import settings
 from deepread.core.logger import logger
-
-# These will be imported once the pipeline components are built
 from deepread.rag.reader.pdf_reader import load_pdf
 from deepread.rag.chunking.chunker import chunk_documents
 from deepread.rag.embeddings.embedding_model import get_embedding_model
-# from deepread.rag.vector_store.vectordb import insert_into_vector_store
+from deepread.rag.vector_store.vectordb import insert_into_vector_store
 
 async def ingest_file(file: UploadFile) -> dict:
     """
@@ -37,7 +35,7 @@ async def ingest_file(file: UploadFile) -> dict:
         raw_docs = load_pdf(file_path)
         chunked_docs = chunk_documents(raw_docs)
         embedding_model = get_embedding_model()
-        # insert_into_vector_store(chunked_docs, embedding_model)
+        insert_into_vector_store(chunked_docs, embedding_model)
         
         logger.info(f"Successfully finished ingestion pipeline for: {file.filename}")
         

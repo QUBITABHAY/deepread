@@ -1,7 +1,7 @@
 from deepread.core.logger import logger
 
 # These will be imported once the pipeline components are built
-# from deepread.rag.retriever.retriever import retrieve_documents
+from deepread.rag.retriver.retriver import retrieve_documents
 # from deepread.rag.llm.llm_client import generate_response
 
 async def process_query(question: str) -> str:
@@ -16,7 +16,7 @@ async def process_query(question: str) -> str:
         # Pipeline execution (Stubbed until rag/ is implemented)
         
         # 1. Retrieve relevant chunks from VectorDB
-        # context_docs = retrieve_documents(question)
+        context_docs = retrieve_documents(question)
         
         # 2. Pass context and question to LLM to generate response
         # answer = generate_response(question, context_docs)
