@@ -1,15 +1,16 @@
 from fastapi import APIRouter, File, UploadFile
 from deepread.core.logger import logger
+from deepread.services.ingestion import ingest_file
 
 router = APIRouter()
 
 
 @router.post("/upload")
 async def upload(file: UploadFile = File(...)):
-    logger.info(f"Received file upload: {file.filename}")
-    content = await file.read()
+    logger.info(f"Received file upload endpoint hit: {file.filename}")
+    
+    # Send to ingestion service layer
+    result = await ingest_file(file)
 
-    # Send to ingestion
-    logger.info(f"File {file.filename} read into memory, size: {len(content)} bytes")
-
-    return {"filename": file.filename, "content": content}
+    logger.info(f"Ingestion finished for {file.filename}")
+    return result
