@@ -1,8 +1,6 @@
 from typing import List
 from langchain_core.documents import Document
 from deepread.core.logger import logger
-
-# This will depend on the vector_store implementation
 from deepread.rag.vector_store.vectordb import get_vector_store
 
 def retrieve_documents(query: str, top_k: int = 4) -> List[Document]:
