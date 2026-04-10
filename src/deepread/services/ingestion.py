@@ -1,4 +1,5 @@
 import os
+import tempfile
 from fastapi import UploadFile
 from deepread.core.config import settings
 from deepread.core.logger import logger
@@ -10,29 +11,21 @@ from deepread.rag.vector_store.vectordb import insert_into_vector_store
 async def ingest_file(file: UploadFile) -> dict:
     """
     Service orchestrator for the document ingestion pipeline.
-    Handles saving the raw file and routing it through RAG processes.
+    Processes the raw file through RAG processes without storing it permanently.
     """
     logger.info(f"Starting ingestion for file: {file.filename}")
     
-    os.makedirs(settings.STORAGE_DIR, exist_ok=True)
+    content = await file.read()
     
-    file_path = os.path.join(settings.STORAGE_DIR, file.filename)
-    
-    try:
-        content = await file.read()
-        with open(file_path, "wb") as f:
-            f.write(content)
-        logger.info(f"Saved {file.filename} to {file_path} for processing.")
-    except Exception as e:
-        logger.error(f"Failed to save {file.filename} to disk: {str(e)}")
-        raise Exception(f"File save error: {str(e)}")
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        tmp.write(content)
+        tmp_path = tmp.name
 
     # Process through the Retrieval-Augmented Generation (RAG) pipeline
     try:
-        logger.info(f"Orchestrating RAG extraction for {file_path}")
+        logger.info(f"Orchestrating RAG extraction for {file.filename}")
         
-        # Pipeline execution (Stubbed until rag/ is implemented)
-        raw_docs = load_pdf(file_path)
+        raw_docs = load_pdf(tmp_path)
         chunked_docs = chunk_documents(raw_docs)
         embedding_model = get_embedding_model()
         insert_into_vector_store(chunked_docs, embedding_model)
@@ -49,3 +42,6 @@ async def ingest_file(file: UploadFile) -> dict:
     except Exception as e:
         logger.error(f"Pipeline error for {file.filename}: {str(e)}")
         raise Exception(f"Failed to process the document through pipeline: {str(e)}")
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)

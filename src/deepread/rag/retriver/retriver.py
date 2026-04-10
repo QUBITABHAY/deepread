@@ -3,7 +3,7 @@ from langchain_core.documents import Document
 from deepread.core.logger import logger
 from deepread.rag.vector_store.vectordb import get_vector_store
 
-def retrieve_documents(query: str, top_k: int = 4) -> List[Document]:
+def retrieve_documents(query: str, top_k: int = 6) -> List[Document]:
     """
     Retrieves the most semantically relevant document chunks for a given query.
     
@@ -21,7 +21,10 @@ def retrieve_documents(query: str, top_k: int = 4) -> List[Document]:
         vector_store = get_vector_store()
         
         # 2. Build the retriever and fetch results
-        retriever = vector_store.as_retriever(search_kwargs={"k": top_k})
+        retriever = vector_store.as_retriever(
+            search_type="mmr", 
+            search_kwargs={"k": top_k, "fetch_k": 20}
+        )
         docs = retriever.invoke(query)
         
         logger.info(f"Retrieved {len(docs)} relevant chunks from Vector DB.")

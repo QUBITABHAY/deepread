@@ -3,7 +3,7 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from deepread.core.logger import logger
 
-def chunk_documents(documents: List[Document], chunk_size: int = 1000, chunk_overlap: int = 200) -> List[Document]:
+def chunk_documents(documents: List[Document], chunk_size: int = 2000, chunk_overlap: int = 400) -> List[Document]:
     """
     Splits a list of LangChain Document objects into smaller chunks using 
     RecursiveCharacterTextSplitter. This is essential to fit documents

@@ -15,3 +15,7 @@ wheels/
 # Environment variables
 .env
 .env.local
+
+# Sensitive files
+chroma_db/
+storage/
