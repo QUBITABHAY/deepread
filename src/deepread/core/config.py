@@ -2,7 +2,6 @@ import os
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 class Settings(BaseModel):
@@ -12,12 +11,15 @@ class Settings(BaseModel):
     PORT: int = 8080
 
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    LLM_MODEL: str = os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
+    LLM_MODEL: str = os.getenv("LLM_MODEL", "openai/gpt-oss-120b")
 
     STORAGE_DIR: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "storage")
 
-    # Uncomment for future use
-    # REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
     VECTOR_DB_PATH: str = os.getenv("VECTOR_DB_PATH", "chroma_db")
+
+    CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "1000"))
+    CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "200"))
+    RETRIEVER_TOP_K: int = int(os.getenv("RETRIEVER_TOP_K", "8"))
 
 settings = Settings()
